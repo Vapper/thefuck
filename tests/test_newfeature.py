@@ -1,4 +1,5 @@
-import pytest
+# Pytest is not used here
+# import pytest
 
 def test_impossibleTest():
     assert 4 == 5
