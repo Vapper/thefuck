@@ -50,4 +50,3 @@ after_success:
 
 notifications:
   slack: thefuck-pppp:5hE56KwEHKQG6QMvIiFY3H1L
-    on_success: always
