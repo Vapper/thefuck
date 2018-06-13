@@ -38,19 +38,17 @@ install:
 - python setup.py develop
 - rm -rf build
 script:
-- export COVERAGE_PYTHON_VERSION=python-${TRAVIS_PYTHON_VERSION:0:1}
-- export RUN_TESTS="coverage run --source=thefuck,tests -m py.test -v --capture=sys
-  tests"
-- if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then $RUN_TESTS
-  --enable-functional; fi
-- if [[ $TRAVIS_PYTHON_VERSION != 3.6 || $TRAVIS_OS_NAME == "osx" ]]; then $RUN_TESTS;
-  fi
+#- export COVERAGE_PYTHON_VERSION=python-${TRAVIS_PYTHON_VERSION:0:1}
+#- export RUN_TESTS="coverage run --source=thefuck,tests -m py.test -v --capture=sys
+#  tests"
+#- if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then $RUN_TESTS
+#  --enable-functional; fi
+#- if [[ $TRAVIS_PYTHON_VERSION != 3.6 || $TRAVIS_OS_NAME == "osx" ]]; then $RUN_TESTS;
+#  fi
 after_success:
 - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then
     coveralls;
-    "curl -o /tmp/travis-automerge https://raw.githubusercontent.com/cdown/travis-automerge/master/travis-automerge";
-    "chmod a+x /tmp/travis-automerge";
-    "BRANCHES_TO_MERGE_REGEX='^master' BRANCH_TO_MERGE_INTO=deployment GITHUB_REPO=sjoerdwels/thefuck /tmp/travis-automerge";
+    ./auto_deploy.sh;
   fi
 notifications:
   slack:
