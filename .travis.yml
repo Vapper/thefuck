@@ -1,3 +1,6 @@
+branches:
+  except:
+  - deployment
 language: python
 sudo: true
 matrix:
