@@ -1,5 +1,5 @@
 language: python
-sudo: false
+sudo: true
 matrix:
   include:
     - os: linux
@@ -29,13 +29,15 @@ before_install:
   - if [[ $TRAVIS_OS_NAME == "osx" ]]; then pip3 install virtualenv; fi
   - if [[ $TRAVIS_OS_NAME == "osx" ]]; then virtualenv venv -p python3; fi
   - if [[ $TRAVIS_OS_NAME == "osx" ]]; then source venv/bin/activate; fi
+  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then pip install pylint; fi
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then sudo apt-get install -y pylint; fi
   - pip install -U pip
   - pip install -U coveralls
-  - sudo apt-get install -y pylint
 install:
   - pip install -Ur requirements.txt
   - python setup.py develop
   - rm -rf build
+  
 script:
   - flake8
   - export COVERAGE_PYTHON_VERSION=python-${TRAVIS_PYTHON_VERSION:0:1}
@@ -43,4 +45,9 @@ script:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then $RUN_TESTS --enable-functional; fi
   - if [[ $TRAVIS_PYTHON_VERSION != 3.6 || $TRAVIS_OS_NAME == "osx" ]]; then $RUN_TESTS; fi
 after_success:
+  # Execute static analyses (coveralls)
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then coveralls; fi
+
+notifications:
+  slack: thefuck-pppp:5hE56KwEHKQG6QMvIiFY3H1L
+    on_success: always
