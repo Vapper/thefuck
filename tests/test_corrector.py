@@ -66,6 +66,7 @@ def test_organize_commands():
 
 @pytest.mark.parametrize('command, result', [
         (Command('sudo apt-get instll flask8', 'E: Invalid operation instll'), 'sudo apt-get install flask8'),
+        (Command('apt-get instll flask8', 'E: Invalid operation instll'), 'apt-get install flask8'),
     ])
 def test_get_correct_command(command, result):
     corrected_commands = list(get_corrected_commands(command))
