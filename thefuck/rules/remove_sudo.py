@@ -1,6 +1,7 @@
 from thefuck.types import Command
 from thefuck.corrector import get_rules
 
+
 def match(command):
     if command.script_parts and command.script_parts[0] == 'sudo':
         return True
