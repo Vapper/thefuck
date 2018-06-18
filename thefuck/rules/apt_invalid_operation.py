@@ -3,6 +3,8 @@ from thefuck.specific.apt import apt_available
 from thefuck.specific.sudo import sudo_support
 from thefuck.utils import for_app, eager, replace_command
 
+from tests.utils import log
+
 enabled_by_default = apt_available
 
 
@@ -34,7 +36,7 @@ def _parse_apt_get_and_cache_operations(help_text_lines):
                 return
 
             yield line.split()[0]
-        elif line.startswith('Commands:'):
+        elif line.startswith('Commands:') or line.startswith("Most used commands:"):
             is_commands_list = True
 
 
@@ -43,7 +45,6 @@ def _get_operations(app):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     lines = proc.stdout.readlines()
-
     if app == 'apt':
         return _parse_apt_operations(lines)
     else:
