@@ -8,6 +8,7 @@ from thefuck.types import Command
 from thefuck.corrector import get_corrected_commands, organize_commands
 import platform
 
+from tests.utils import log
 
 class TestGetRules(object):
     @pytest.fixture
@@ -73,3 +74,11 @@ def test_get_correct_command(command, result):
     corrected_commands = list(get_corrected_commands(command))
     assert len(corrected_commands) > 0
     assert(corrected_commands[0].script == result)
+
+
+@pytest.mark.parametrize('command', [
+    (Command('sudo jubberish sodasudaosu', 'E: Invalid operation instll')),])
+def test_no_commands_found(command):
+    corrected_commands = list(get_corrected_commands(command))
+    log(str(corrected_commands))
+    assert len(corrected_commands) == 0
