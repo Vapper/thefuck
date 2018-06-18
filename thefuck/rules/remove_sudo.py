@@ -17,6 +17,6 @@ def get_new_command(command):
         if rule.is_match(newCommand)
         for corrected in rule.get_corrected_commands(newCommand))
     if len(corrected_commands) > 0:
-        return u'sudo' + str(corrected_commands[0].script)
+        return [u'sudo' + str(cc.script) for cc in corrected_commands]
     else:
-        return None
+        return []
