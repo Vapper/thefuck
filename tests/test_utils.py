@@ -215,11 +215,11 @@ class TestGetValidHistoryWithoutCurrent(object):
         return mocker.patch('thefuck.utils.Path', return_value=path_mock)
 
     @pytest.mark.parametrize('script, result', [
-        ('le cat', ['ls cat', 'diff x', u'café ô']),
-        ('diff x', ['ls cat', u'café ô']),
-        ('fuck', ['ls cat', 'diff x', u'café ô']),
-        (u'cafe ô', ['ls cat', 'diff x', u'café ô']),
+        ('le cat', ['ls cat', 'diff x']),
+        ('diff x', ['ls cat']),
+        ('fuck', ['ls cat', 'diff x']),
+        (u'cafe ô', ['ls cat', 'diff x']),
     ])
     def test_get_valid_history_without_current(self, script, result):
         command = Command(script, '')
-        assert get_valid_history_without_current(command) == result
+        assert get_valid_history_without_current(command)  == result
