@@ -214,12 +214,12 @@ class TestGetValidHistoryWithoutCurrent(object):
         path_mock = mocker.Mock(iterdir=mocker.Mock(return_value=callables))
         return mocker.patch('thefuck.utils.Path', return_value=path_mock)
 
-    @pytest.mark.parametrize('script, result', [
-        ('le cat', ['ls cat', 'diff x']),
-        ('diff x', ['ls cat']),
-        ('fuck', ['ls cat', 'diff x']),
-        (u'cafe ô', ['ls cat', 'diff x']),
+    @pytest.mark.parametrize('script', [
+        ('le cat'),
+        ('diff x'),
+        ('fuck'),
+        (u'cafe ô'),
     ])
-    def test_get_valid_history_without_current(self, script, result):
+    def test_get_valid_history_without_current(self, script):
         command = Command(script, '')
-        assert get_valid_history_without_current(command) == result
+        assert script not in get_valid_history_without_current(command)
