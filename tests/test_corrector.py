@@ -8,6 +8,7 @@ from thefuck.types import Command
 from thefuck.corrector import get_corrected_commands, organize_commands
 
 
+
 class TestGetRules(object):
     @pytest.fixture
     def glob(self, mocker):
@@ -62,3 +63,11 @@ def test_organize_commands():
         == [CorrectedCommand('ls'), CorrectedCommand('ls -lh', priority=100),
             CorrectedCommand(u'echo café', priority=200),
             CorrectedCommand('ls -la', priority=9000)]
+
+@pytest.mark.parametrize('command, result', [
+        (Command('sudo apt-get instll flask8', 'E: Invalid operation instll'), 'sudo apt-get install flask8'),
+    ])
+def test_get_correct_command(command, result):
+    corrected_commands = list(get_corrected_commands(command))
+    assert len(corrected_commands) > 0
+    assert(corrected_commands[0].script == result)
