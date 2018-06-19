@@ -59,7 +59,11 @@ before_script:
 
 script:
 - flake8
+
+  # Type of tests
 - export COVERAGE_PYTHON_VERSION=python-${TRAVIS_PYTHON_VERSION:0:1}
+
+  # Run coverage, measure only thefuck & test, execute py.test module,
 - export RUN_TESTS="coverage run --source=thefuck,tests -m py.test -v --capture=sys tests"
 - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then $RUN_TESTS
   --enable-functional; fi
@@ -70,7 +74,7 @@ after_script:
 
 after_success:
 - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then
-    codeclimate-test-reporter;
+    codeclimate-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT;
     ./auto_deploy.sh;
   fi
 notifications:
