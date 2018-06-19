@@ -53,12 +53,12 @@ script:
   --enable-functional; fi
 - if [[ $TRAVIS_PYTHON_VERSION != 3.6 || $TRAVIS_OS_NAME == "osx" ]]; then $RUN_TESTS;
   fi
-- bundle exec rspec
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 after_success:
 - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then
+    codeclimate-test-reporter
     ./auto_deploy.sh;
   fi
 notifications:
