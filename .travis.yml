@@ -25,7 +25,7 @@ matrix:
     script:
     - pip install coverage
     - flake8
-    - coverage run --source=thefuck,tests -m py.test -v --capture=sys tests --enable-functional;
+    - coverage run --source=thefuck,tests -m py.test -v --capture=sys tests # --enable-functional; temporary disabled to increase speed HAVE TO BE REMOVED
     after_script:
     - coverage xml
     - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build
