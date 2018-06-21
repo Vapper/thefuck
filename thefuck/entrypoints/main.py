@@ -3,7 +3,7 @@ from ..system import init_output
 
 init_output()
 
-import platform
+import platform  # noqa: E402
 import os  # noqa: E402
 import sys  # noqa: E402
 from .. import logs  # noqa: E402
@@ -12,9 +12,12 @@ from ..utils import get_installation_info  # noqa: E402
 from .alias import print_alias  # noqa: E402
 from .fix_command import fix_command  # noqa: E402
 
+
 global uid
-if(platform.system()!="Windows"):
+if(platform.system() != "Windows"):
     uid = os.getuid()
+else:
+    uid = 1
 
 
 def getUID():
