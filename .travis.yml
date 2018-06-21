@@ -32,7 +32,7 @@ matrix:
       --exit-code $TRAVIS_TEST_RESULT; fi
      deploy: # deploy after success
       provider: pypi
-      user: sjoerd.wels
+      user: "sjoerd.wels"
       password:
         secure: QyowIqRoDhsORkQI365PP37xhXF53ORY554mWQxZtFRm3kGA/VFqzprr9S/MNgrEWyHXCDAgT2y1oT7BUQhHZSH/4RfUIcgfZBGpOCaerWP9hTnn/p+XIxrojg2QsS/OH+59EpO8WAG6MxVPLWO/BAeE7EMKSbzNo1k0XLkTwjRaeASbNhIKIxWw2lZx8OA0lMNvEDfF3XeUq9nIlu7qa2sBsz8n9HgPjhEjdAgth+IhF4seX184Kc7K/ZyAGBU0suPedP9CZAt3FG7xJkYYfsbOQI3zgCENnlpBI6kGTPw05S9otkChTzJkZfEJcy3+XVogjcp+agh8SCHeZ8SNC0sPCQHbvLYs4MVdVs4GboKwMRxlWER1K3o8zfCnsr6BoBNenVQ9Pjdhrq9iTV0Fu/OhaeTP0QQvcL3XIOKzyjWqoNEzfnGu8ZfO6x/f1vj95xnBSrRSL1ooga92OAEeslwbwIjiiS2uvRVKxtTUytCr7LxvKO0CPLn4EJfwufcUnFzm+mSVUsFxohBU7HXVDS0XR3wU/Yp2mRswbz+txmBSaJceRsPTlTQrCuWkACdhVF0eHrp/n+YHV2KiURLS30rmfiZNQ2V893WLObKC6wv/SY8SFLHCOB+Su6lE03tCxdtxJBejSnhkS6V7deTC8PGVfa+lz+K6MFxDwDmXYZQ=
   - os: linux
