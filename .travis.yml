@@ -30,7 +30,7 @@ matrix:
     - coverage xml
     - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build
       --exit-code $TRAVIS_TEST_RESULT; fi
-     deploy: # deploy after success
+    deploy: # deploy after success
       provider: pypi
       user: "sjoerd.wels"
       password:
