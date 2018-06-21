@@ -8,4 +8,3 @@ pexpect
 pypandoc
 pytest-benchmark
 pytest-docker-pexpect
-codeclimate-test-reporter

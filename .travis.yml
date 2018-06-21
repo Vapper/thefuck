@@ -2,44 +2,63 @@ branches:
   except:
   - master
 
+# Globals
 language: python
-
-sudo: true
-
+sudo: required
+dist: trusty
+group: edge
 env:
   global:
     - CC_TEST_REPORTER_ID=c8b2dc8d2b5a0a845e108ecb00f453ab0545cbd748e6e9258501a40f3ed39784
     - secure: pjzggmE/efUsQDNSNsfzCzCsfdnQvYN/wqcEwYWUazXH8/haJXNh87MSB97WCo4fp1+0iJKu0QIe5rZRf/YG95LPGd3klGaLGIfh+QXYDAr4ytvrtJnfciQtwJenxqM7x42y3kmtsyxnTaS0t+EpuU2BtnMmIVfPiNo4qCx+pmdyBWRXqhspwLdd1CVnX/8duiesMtwN/clGDLjS6d26hGKTB28bJR79mdeBHfOqY6AkT7OOePsDAgGM+8XfcmMjHu3jxLv0vF6Gw5ZyMCvSCSnyutgWJZnNNFRaGFJe9SkRPyWw0ie3b4I1wsxvahcUO+nTWirF5767nvqqmIkRPqtr1GXksX2a0KSZd9zFCJyc8QfdLK5Ob0YvcdpGMnu4gpuYwL28MK7gyj0aOYHXXrroQ6mWLSMVd6MhtjRFYQXjv+2tLFxlxNlsI6ssu4ZXzsvE5+aeSazxU0haGMWUzUXV7xFCPRceiSdXmg2hn/mtOq7c2hXcASqyY1ZdB4oAul7f9RFlrFiH7erBzEm78V5Q/SwODnRZ82cDp2a3Ba1rH6rwsc6dAASjd1KGDve070eWniSstdisauK7TpAghEwX4yAFaxzvt1djll3BWR49MW+EZDRapZ99NGCT0ZUtqjw7R75FL+Ul8QSYjgLtl28HqjDdi5oJtbXaZ2Bw8Bw=
-
-matrix:
-  include:
-  - os: linux
-    dist: trusty
-    python: '3.6'
-  - os: linux
-    dist: trusty
-    python: '3.5'
-  - os: linux
-    dist: trusty
-    python: '3.4'
-  - os: linux
-    dist: trusty
-    python: '2.7'
-  - os: osx
-    language: generic
-
-services:
-- docker
-
 addons:
   apt:
     packages:
     - python-commandnotfound
     - python3-commandnotfound
 
+# Matrix
+matrix:
+  include:
+  - os: linux
+    python: '3.6'
+    services:
+      - docker # Required for functional tests
+    # Setup/run/report code coverage tool (Only one build needs to do so)
+    before_script:
+      - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - chmod +x ./cc-test-reporter
+      - ./cc-test-reporter before-build
+    script:
+      - pip install coverage
+      - flake8
+      - overage run --source=thefuck,tests -m py.test -v --capture=sys tests --enable-functional;
+    after_script:
+      - coverage xml
+      - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+  - os: linux
+    python: '3.5'
+  - os: linux
+    python: '3.4'
+  - os: linux
+    python: '2.7'
+  - os: osx
+    osx_image: xcode9.1   # macOS 10.12
+    language: generic     # Override global
+    before_install:
+      - brew update # Need to update first
+      - brew upgrade python # Install latest Python3
+      - export PATH="/usr/local/opt/python/libexec/bin:$PATH" # Alias 'python' to latest Python3
+      - virtualenv env -p python
+      - source env/bin/activate
+      - python --version
+
+
+
+
 before_install:
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then brew update ; fi
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then brew upgrade python; fi
+- if [[ $TRAVIS_OS_NAME == "osx" ]];
+- if [[ $TRAVIS_OS_NAME == "os
 - if [[ $TRAVIS_OS_NAME == "osx" ]]; then pip3 install virtualenv; fi
 - if [[ $TRAVIS_OS_NAME == "osx" ]]; then virtualenv venv -p python3; fi
 - if [[ $TRAVIS_OS_NAME == "osx" ]]; then source venv/bin/activate; fi
@@ -48,35 +67,16 @@ before_install:
 - pip install -U pip
 
 install:
-- pip install -Ur requirements.txt
-- python setup.py develop
-- rm -rf build
-
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+  - python --version
+  - pip --version
+  - pip install --upgrade pip
+  - pip install -Ur requirements.txt
+  - python setup.py develop
+  - rm -rf build
 
 script:
-- flake8
+  - coverage run --source=thefuck,tests -m py.test -v --capture=sys tests
 
-  # Type of tests
-- export COVERAGE_PYTHON_VERSION=python-${TRAVIS_PYTHON_VERSION:0:1}
-
-  # Run coverage, measure only thefuck & test, execute py.test module,
-- export RUN_TESTS="coverage run --source=thefuck,tests -m py.test -v --capture=sys tests"
-- if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then $RUN_TESTS
-  --enable-functional; fi
-- if [[ $TRAVIS_PYTHON_VERSION != 3.6 || $TRAVIS_OS_NAME == "osx" ]]; then $RUN_TESTS;
-  fi
-after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-
-after_success:
-- if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then
-    codeclimate-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT;
-    ./auto_deploy.sh;
-  fi
 notifications:
   slack:
     secure: T9jxF3LbHRtBMtN99WHQo1yu620TdFhxwtRCl95BTanys85tsuCtU1Zu9K7WE8Hk/zmWyBlRz9GAMX2A1YDlblSNV/haZ3Wr/SSmKABhL1+e+okF+4ZUsnvjXSHUDWLWXsuwZ38rjf96eSGKj3WwWik8YZyndf6UhJe4Yy//HMyOUsy0aDTXxkAf4/zEVLPHBFHUGtBPGqOt7lSbyxqFK6JUPFdHxiIaIpFw5CtvR3hBk242w+sXaPsoBV1K4q8nx9w8sa7556vqVb16uf7Kk6A7ckE0VbZORkC413WYVasFpF9k37MCjheg7EGuUMIquMwD7e7I9f9YX0O6TGukYPOY88dYqpUKVRdhPiLeaZw0R+C/ZwocHY9gTeW38eA7vbpDRFIT6TN73iR5/ImpU2IfwDiUsozzcuZDzHoJzjXV48S42YV7bH+ztREUDbO5Y7yA0FKts6GGNSc5qj2UfC71zAru6aBCGPi6z80oYOFLFmIqcPT+7USfALlnT2FEna0Yt7eLoVkIidiGpIHbYqSXYi8yaL+NJCvfYt+c2x5Z4l6tXbQNmY4oMF250sdSR3wacz6oJPPrf/XltNOiEIfu1T0C/FmFG6IvW8yk4+g5jBKNxaLzbRql8o9b78ZGHkxITPCdVIXkESJ4imCvtI+8GfkW339odqXDqsUDSxY=
