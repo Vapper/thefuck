@@ -2,7 +2,7 @@ import subprocess
 from thefuck.specific.apt import apt_available
 from thefuck.specific.sudo import sudo_support
 from thefuck.utils import for_app, eager, replace_command
-
+from thefuck.entrypoints.main import getUID
 enabled_by_default = apt_available
 
 
@@ -49,8 +49,15 @@ def _get_operations(app):
         return _parse_apt_get_and_cache_operations(lines)
 
 
+def add_sudo_if_necessary(list):
+    if getUID() != 0:
+        return [u"sudo " + item for item in list]
+    else:
+        return list
+
+
 @sudo_support
 def get_new_command(command):
     invalid_operation = command.output.split()[-1]
     operations = _get_operations(command.script_parts[0])
-    return replace_command(command, invalid_operation, operations)
+    return add_sudo_if_necessary(replace_command(command, invalid_operation, operations))

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-import os
 from tests.utils import Rule, CorrectedCommand
 from thefuck import corrector, const
 from thefuck.system import Path
 from thefuck.types import Command
 from thefuck.corrector import get_corrected_commands, organize_commands
+from thefuck.entrypoints.main import setUID
 import platform
 
 
@@ -67,10 +67,11 @@ def test_organize_commands():
 
 
 @pytest.mark.skipif(platform.system() != 'Linux', reason='Requires Linux')
-@pytest.mark.parametrize('command, result', [
-    (Command('sudo apt-get instll flask8', 'E: Invalid operation instll'), 'sudo apt-get install flask8'),
-    (Command('apt-get instll flask8', 'E: Invalid operation instll'), 'apt-get install flask8')])
-def test_get_correct_command(command, result):
+@pytest.mark.parametrize('command, uid, result', [
+    (Command('sudo apt-get instll flask8', 'E: Invalid operation instll'), 1234, 'sudo apt-get install flask8'),
+    (Command('apt-get instll flask8', 'E: Invalid operation instll'), 0, 'apt-get install flask8')])
+def test_get_correct_command(command, uid, result):
+    setUID(uid)
     corrected_commands = list(get_corrected_commands(command))
     assert len(corrected_commands) > 0
     assert(corrected_commands[0].script == result)
@@ -83,10 +84,11 @@ def test_no_commands_found(command):
     assert len(corrected_commands) == 0
 
 
-@pytest.mark.skipif(platform.system() != 'Linux' or os.getuid() == 0, reason='Requires Linux and none sudo right')
+@pytest.mark.skipif(platform.system() != 'Linux', reason='Requires Linux')
 @pytest.mark.parametrize('command, result', [
     (Command('apt-get instll flask8', 'E: Invalid operation instll'), 'sudo apt-get install flask8')])
 def test_none_root_commands(command, result):
+    setUID(1234)
     corrected_commands = list(get_corrected_commands(command))
     assert len(corrected_commands) > 0
     assert(result in [corrected.script for corrected in corrected_commands])
