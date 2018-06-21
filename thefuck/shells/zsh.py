@@ -4,7 +4,7 @@ from tempfile import gettempdir
 from uuid import uuid4
 from ..conf import settings
 from ..const import ARGUMENT_PLACEHOLDER, USER_COMMAND_MARK
-from ..utils import memoize
+from ..utils import memoize, parse_alias
 from .generic import Generic
 
 
@@ -54,10 +54,7 @@ class Zsh(Generic):
             '''.format(log=log_path)
 
     def _parse_alias(self, alias):
-        name, value = alias.split('=', 1)
-        if value[0] == value[-1] == '"' or value[0] == value[-1] == "'":
-            value = value[1:-1]
-        return name, value
+        return parse_alias(alias)
 
     @memoize
     def get_aliases(self):
