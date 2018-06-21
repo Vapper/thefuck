@@ -1,6 +1,3 @@
-branches:
-  except:
-  - master
 
 # Globals
 language: python
