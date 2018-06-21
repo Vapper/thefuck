@@ -320,3 +320,12 @@ def format_raw_script(raw_script):
         script = ' '.join(raw_script)
 
     return script.strip()
+
+
+def get_new_command_imp(command, prop, unicode=False):
+    parts = command.script_parts[:]
+    parts.insert(1, prop)
+    if unicode:
+        return u' '.join(parts)
+    else:
+        return ' '.join(parts)
