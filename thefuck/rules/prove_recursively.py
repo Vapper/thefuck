@@ -22,4 +22,4 @@ def match(command):
 
 
 def get_new_command(command):
-    get_new_command_imp(command, '-r', unicode=True)
+    return get_new_command_imp(command, '-r', unicode=True)

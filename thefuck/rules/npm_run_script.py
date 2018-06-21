@@ -12,4 +12,4 @@ def match(command):
 
 
 def get_new_command(command):
-    get_new_command_imp(command, 'run-script')
+    return get_new_command_imp(command, 'run-script')
