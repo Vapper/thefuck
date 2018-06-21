@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
+import os
 from tests.utils import Rule, CorrectedCommand
 from thefuck import corrector, const
 from thefuck.system import Path
@@ -80,3 +81,12 @@ def test_get_correct_command(command, result):
 def test_no_commands_found(command):
     corrected_commands = list(get_corrected_commands(command))
     assert len(corrected_commands) == 0
+
+
+@pytest.mark.skipif(platform.system() != 'Linux' or os.getuid() == 0, reason='Requires Linux and none sudo right')
+@pytest.mark.parametrize('command, result', [
+    (Command('apt-get instll flask8', 'E: Invalid operation instll'), 'sudo apt-get install flask8')])
+def test_none_root_commands(command, result):
+    corrected_commands = list(get_corrected_commands(command))
+    assert len(corrected_commands) > 0
+    assert(result in [corrected.script for corrected in corrected_commands])
