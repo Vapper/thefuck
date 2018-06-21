@@ -322,6 +322,15 @@ def format_raw_script(raw_script):
     return script.strip()
 
 
+def get_new_command_imp(command, prop, unicode=False):
+    parts = command.script_parts[:]
+    parts.insert(1, prop)
+    if unicode:
+        return u' '.join(parts)
+    else:
+        return ' '.join(parts)
+
+
 def parse_alias(alias):
     name, value = alias.replace('alias ', '', 1).split('=', 1)
     if value[0] == value[-1] == '"' or value[0] == value[-1] == "'":

@@ -1,62 +1,66 @@
-branches:
-  except:
-  - deployment
 language: python
-sudo: true
-matrix:
-  include:
-  - os: linux
-    dist: trusty
-    python: '3.6'
-  - os: linux
-    dist: trusty
-    python: '3.5'
-  - os: linux
-    dist: trusty
-    python: '3.4'
-  - os: linux
-    dist: trusty
-    python: '2.7'
-  - os: osx
-    language: generic
-services:
-- docker
+sudo: required
+dist: trusty
+group: edge
+env:
+  global:
+  - CC_TEST_REPORTER_ID=c8b2dc8d2b5a0a845e108ecb00f453ab0545cbd748e6e9258501a40f3ed39784
+  - secure: pjzggmE/efUsQDNSNsfzCzCsfdnQvYN/wqcEwYWUazXH8/haJXNh87MSB97WCo4fp1+0iJKu0QIe5rZRf/YG95LPGd3klGaLGIfh+QXYDAr4ytvrtJnfciQtwJenxqM7x42y3kmtsyxnTaS0t+EpuU2BtnMmIVfPiNo4qCx+pmdyBWRXqhspwLdd1CVnX/8duiesMtwN/clGDLjS6d26hGKTB28bJR79mdeBHfOqY6AkT7OOePsDAgGM+8XfcmMjHu3jxLv0vF6Gw5ZyMCvSCSnyutgWJZnNNFRaGFJe9SkRPyWw0ie3b4I1wsxvahcUO+nTWirF5767nvqqmIkRPqtr1GXksX2a0KSZd9zFCJyc8QfdLK5Ob0YvcdpGMnu4gpuYwL28MK7gyj0aOYHXXrroQ6mWLSMVd6MhtjRFYQXjv+2tLFxlxNlsI6ssu4ZXzsvE5+aeSazxU0haGMWUzUXV7xFCPRceiSdXmg2hn/mtOq7c2hXcASqyY1ZdB4oAul7f9RFlrFiH7erBzEm78V5Q/SwODnRZ82cDp2a3Ba1rH6rwsc6dAASjd1KGDve070eWniSstdisauK7TpAghEwX4yAFaxzvt1djll3BWR49MW+EZDRapZ99NGCT0ZUtqjw7R75FL+Ul8QSYjgLtl28HqjDdi5oJtbXaZ2Bw8Bw=
 addons:
   apt:
     packages:
     - python-commandnotfound
     - python3-commandnotfound
-before_install:
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then brew update ; fi
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then brew upgrade python; fi
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then pip3 install virtualenv; fi
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then virtualenv venv -p python3; fi
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then source venv/bin/activate; fi
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then pip install pylint; fi
-- if [[ $TRAVIS_OS_NAME == "linux" ]]; then sudo apt-get install -y pylint; fi
-- pip install -U pip
-- pip install -U coveralls
+matrix:
+  include:
+  - os: linux
+    python: '3.6'
+    services:
+    - docker
+    before_script:
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+      > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - "./cc-test-reporter before-build"
+    script:
+    - pip install coverage
+    - flake8
+    - coverage run --source=thefuck,tests -m py.test -v --capture=sys tests # --enable-functional; temporary disabled to increase speed HAVE TO BE REMOVED
+    after_script:
+    - coverage xml
+    - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build
+      --exit-code $TRAVIS_TEST_RESULT; fi
+    deploy: # deploy after success
+      provider: pypi
+      user: "sjoerd.wels"
+      password:
+        secure: QyowIqRoDhsORkQI365PP37xhXF53ORY554mWQxZtFRm3kGA/VFqzprr9S/MNgrEWyHXCDAgT2y1oT7BUQhHZSH/4RfUIcgfZBGpOCaerWP9hTnn/p+XIxrojg2QsS/OH+59EpO8WAG6MxVPLWO/BAeE7EMKSbzNo1k0XLkTwjRaeASbNhIKIxWw2lZx8OA0lMNvEDfF3XeUq9nIlu7qa2sBsz8n9HgPjhEjdAgth+IhF4seX184Kc7K/ZyAGBU0suPedP9CZAt3FG7xJkYYfsbOQI3zgCENnlpBI6kGTPw05S9otkChTzJkZfEJcy3+XVogjcp+agh8SCHeZ8SNC0sPCQHbvLYs4MVdVs4GboKwMRxlWER1K3o8zfCnsr6BoBNenVQ9Pjdhrq9iTV0Fu/OhaeTP0QQvcL3XIOKzyjWqoNEzfnGu8ZfO6x/f1vj95xnBSrRSL1ooga92OAEeslwbwIjiiS2uvRVKxtTUytCr7LxvKO0CPLn4EJfwufcUnFzm+mSVUsFxohBU7HXVDS0XR3wU/Yp2mRswbz+txmBSaJceRsPTlTQrCuWkACdhVF0eHrp/n+YHV2KiURLS30rmfiZNQ2V893WLObKC6wv/SY8SFLHCOB+Su6lE03tCxdtxJBejSnhkS6V7deTC8PGVfa+lz+K6MFxDwDmXYZQ=
+  - os: linux
+    python: '3.5'
+  - os: linux
+    python: '3.4'
+  - os: linux
+    python: '2.7'
+  - os: osx
+    osx_image: xcode9.1
+    language: generic
+    before_install:
+    - brew update
+    - brew upgrade python
+    - export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+    - virtualenv env -p python
+    - source env/bin/activate
+    - python --version
+
 install:
+- python --version
+- pip --version
+- pip install --upgrade pip
 - pip install -Ur requirements.txt
 - python setup.py develop
 - rm -rf build
 script:
-- flake8
-- export COVERAGE_PYTHON_VERSION=python-${TRAVIS_PYTHON_VERSION:0:1}
-- export RUN_TESTS="coverage run --source=thefuck,tests -m py.test -v --capture=sys
-  tests"
-- if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then $RUN_TESTS
-  --enable-functional; fi
-- if [[ $TRAVIS_PYTHON_VERSION != 3.6 || $TRAVIS_OS_NAME == "osx" ]]; then $RUN_TESTS;
-  fi
-after_success:
-- if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME != "osx" ]]; then
-    coveralls;
-    ./auto_deploy.sh;
-  fi
+- py.test
 notifications:
   slack:
     secure: T9jxF3LbHRtBMtN99WHQo1yu620TdFhxwtRCl95BTanys85tsuCtU1Zu9K7WE8Hk/zmWyBlRz9GAMX2A1YDlblSNV/haZ3Wr/SSmKABhL1+e+okF+4ZUsnvjXSHUDWLWXsuwZ38rjf96eSGKj3WwWik8YZyndf6UhJe4Yy//HMyOUsy0aDTXxkAf4/zEVLPHBFHUGtBPGqOt7lSbyxqFK6JUPFdHxiIaIpFw5CtvR3hBk242w+sXaPsoBV1K4q8nx9w8sa7556vqVb16uf7Kk6A7ckE0VbZORkC413WYVasFpF9k37MCjheg7EGuUMIquMwD7e7I9f9YX0O6TGukYPOY88dYqpUKVRdhPiLeaZw0R+C/ZwocHY9gTeW38eA7vbpDRFIT6TN73iR5/ImpU2IfwDiUsozzcuZDzHoJzjXV48S42YV7bH+ztREUDbO5Y7yA0FKts6GGNSc5qj2UfC71zAru6aBCGPi6z80oYOFLFmIqcPT+7USfALlnT2FEna0Yt7eLoVkIidiGpIHbYqSXYi8yaL+NJCvfYt+c2x5Z4l6tXbQNmY4oMF250sdSR3wacz6oJPPrf/XltNOiEIfu1T0C/FmFG6IvW8yk4+g5jBKNxaLzbRql8o9b78ZGHkxITPCdVIXkESJ4imCvtI+8GfkW339odqXDqsUDSxY=
-env:
-  global:
-    secure: pjzggmE/efUsQDNSNsfzCzCsfdnQvYN/wqcEwYWUazXH8/haJXNh87MSB97WCo4fp1+0iJKu0QIe5rZRf/YG95LPGd3klGaLGIfh+QXYDAr4ytvrtJnfciQtwJenxqM7x42y3kmtsyxnTaS0t+EpuU2BtnMmIVfPiNo4qCx+pmdyBWRXqhspwLdd1CVnX/8duiesMtwN/clGDLjS6d26hGKTB28bJR79mdeBHfOqY6AkT7OOePsDAgGM+8XfcmMjHu3jxLv0vF6Gw5ZyMCvSCSnyutgWJZnNNFRaGFJe9SkRPyWw0ie3b4I1wsxvahcUO+nTWirF5767nvqqmIkRPqtr1GXksX2a0KSZd9zFCJyc8QfdLK5Ob0YvcdpGMnu4gpuYwL28MK7gyj0aOYHXXrroQ6mWLSMVd6MhtjRFYQXjv+2tLFxlxNlsI6ssu4ZXzsvE5+aeSazxU0haGMWUzUXV7xFCPRceiSdXmg2hn/mtOq7c2hXcASqyY1ZdB4oAul7f9RFlrFiH7erBzEm78V5Q/SwODnRZ82cDp2a3Ba1rH6rwsc6dAASjd1KGDve070eWniSstdisauK7TpAghEwX4yAFaxzvt1djll3BWR49MW+EZDRapZ99NGCT0ZUtqjw7R75FL+Ul8QSYjgLtl28HqjDdi5oJtbXaZ2Bw8Bw=

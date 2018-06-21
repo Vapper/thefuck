@@ -38,7 +38,7 @@ extras_require = {':python_version<"3.4"': ['pathlib2'],
                   ':python_version<"3.3"': ['backports.shutil_get_terminal_size'],
                   ":sys_platform=='win32'": ['win_unicode_console']}
 
-setup(name='thefuck',
+setup(name='thefuckPPPP',
       version=VERSION,
       description="Magnificent app which corrects your previous console command",
       long_description=long_description,
