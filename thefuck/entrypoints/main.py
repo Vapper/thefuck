@@ -11,6 +11,19 @@ from ..utils import get_installation_info  # noqa: E402
 from .alias import print_alias  # noqa: E402
 from .fix_command import fix_command  # noqa: E402
 
+global uid
+uid = os.getuid()
+
+
+def getUID():
+    global uid
+    return uid
+
+
+def setUID(newUID):
+    global uid
+    uid = newUID
+
 
 def main():
     parser = Parser()

@@ -219,9 +219,8 @@ following rules are enabled by default:
 * `git_push_without_commits` &ndash; Creates an initial commit if you forget and only `git add .`, when setting up a new project;
 * `git_rebase_no_changes` &ndash; runs `git rebase --skip` instead of `git rebase --continue` when there are no changes;
 * `git_remote_delete` &ndash; replaces `git remote delete remote_name` with `git remote remove remote_name`;
-* `git_rm_local_modifications` &ndash;  adds `-f` or `--cached` when you try to `rm` a locally modified file;
+* `git_rm_cached_f` &ndash;  adds `-f` or `--cached` when you try to `rm` a locally modified file or staged file;
 * `git_rm_recursive` &ndash; adds `-r` when you try to `rm` a directory;
-* `git_rm_staged` &ndash;  adds `-f` or `--cached` when you try to `rm` a file with staged changes
 * `git_rebase_merge_dir` &ndash; offers `git rebase (--continue | --abort | --skip)` or removing the `.git/rebase-merge` dir when a rebase is in progress;
 * `git_remote_seturl_add` &ndash; runs `git remote add` when `git remote set_url` on nonexistant remote;
 * `git_stash` &ndash; stashes your local modifications before rebasing or switching branch;
@@ -278,7 +277,7 @@ following rules are enabled by default:
 * `sl_ls` &ndash; changes `sl` to `ls`;
 * `ssh_known_hosts` &ndash; removes host from `known_hosts` on warning;
 * `sudo` &ndash; prepends `sudo` to previous command if it failed because of permissions;
-* `remove_sudo` &ndash; if using sudo from command, then it will still work through all the rules;
+* `without_sudo` &ndash; if using sudo from command, then it will still work through all the rules;
 * `sudo_command_from_user_path` &ndash; runs commands from users `$PATH` with `sudo`;
 * `switch_lang` &ndash; switches command from your local layout to en;
 * `systemctl` &ndash; correctly orders parameters of confusing `systemctl`;

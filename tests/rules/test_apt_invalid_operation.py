@@ -3,7 +3,7 @@ import pytest
 from thefuck.types import Command
 from thefuck.rules.apt_invalid_operation import match, get_new_command, \
     _get_operations
-
+from thefuck.entrypoints.main import setUID
 invalid_operation = 'E: Invalid operation {}'.format
 apt_help = b'''apt 1.0.10.2ubuntu1 for amd64 compiled on Oct  5 2015 15:55:05
 Usage: apt [options] command
@@ -118,5 +118,6 @@ def test_get_operations(set_help, app, help_text, operations):
      apt_help, 'apt search vim'),
 ])
 def test_get_new_command(set_help, output, script, help_text, result):
+    setUID(0)
     set_help(help_text)
     assert get_new_command(Command(script, output))[0] == result

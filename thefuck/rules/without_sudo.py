@@ -9,7 +9,7 @@ def match(command):
 
 
 def get_new_command(command):
-    script = command.script[4:]
+    script = command.script[5:]
     output = command.output
     newCommand = Command(script, output)
     corrected_commands = list(
@@ -17,6 +17,6 @@ def get_new_command(command):
         if rule.is_match(newCommand)
         for corrected in rule.get_corrected_commands(newCommand))
     if len(corrected_commands) > 0:
-        return [u'sudo' + str(cc.script) for cc in corrected_commands]
+        return [cc.script if cc.script[:4] == 'sudo' else u'sudo ' + str(cc.script) for cc in corrected_commands]
     else:
         return []

@@ -1,5 +1,5 @@
 from thefuck.specific.npm import npm_available, get_scripts
-from thefuck.utils import for_app
+from thefuck.utils import for_app, get_new_command_imp
 
 enabled_by_default = npm_available
 
@@ -12,6 +12,4 @@ def match(command):
 
 
 def get_new_command(command):
-    parts = command.script_parts[:]
-    parts.insert(1, 'run-script')
-    return ' '.join(parts)
+    return get_new_command_imp(command, 'run-script')
