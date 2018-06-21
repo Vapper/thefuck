@@ -53,19 +53,6 @@ matrix:
       - source env/bin/activate
       - python --version
 
-
-
-
-before_install:
-- if [[ $TRAVIS_OS_NAME == "osx" ]];
-- if [[ $TRAVIS_OS_NAME == "os
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then pip3 install virtualenv; fi
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then virtualenv venv -p python3; fi
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then source venv/bin/activate; fi
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then pip install pylint; fi
-- if [[ $TRAVIS_OS_NAME == "linux" ]]; then sudo apt-get install -y pylint; fi
-- pip install -U pip
-
 install:
   - python --version
   - pip --version
