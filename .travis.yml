@@ -32,7 +32,7 @@ matrix:
     script:
       - pip install coverage
       - flake8
-      - overage run --source=thefuck,tests -m py.test -v --capture=sys tests --enable-functional;
+      - coverage run --source=thefuck,tests -m py.test -v --capture=sys tests --enable-functional;
     after_script:
       - coverage xml
       - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
@@ -62,7 +62,7 @@ install:
   - rm -rf build
 
 script:
-  - coverage run --source=thefuck,tests -m py.test -v --capture=sys tests
+  - py.test
 
 notifications:
   slack:
