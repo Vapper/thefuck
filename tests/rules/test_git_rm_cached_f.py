@@ -1,11 +1,11 @@
 import pytest
-from thefuck.rules.git_rm_staged import match, get_new_command
+from thefuck.rules.git_rm_cached_f import match, get_new_command
 from thefuck.types import Command
 
 
 @pytest.fixture
 def output(target):
-    return ('error: the following file has changes staged in the index:\n    {}\n(use '
+    return ('error: the following file has local modifications:\n    {}\n(use '
             '--cached to keep the file, or -f to force removal)').format(target)
 
 
